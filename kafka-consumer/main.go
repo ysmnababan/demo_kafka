@@ -6,19 +6,26 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
+type Consumer interface {
+	Subscribe(topic string)
+	ReadMessage(timeout time.Duration) (message *kafka.Message, err error)
+	Terminate() error
+}
+
 func main() {
-	fmt.Println("here")
-	k := NewKafkaUtil("golang")
-	k.Subscribe("helloworld")
+	var c Consumer = NewKafkaUtil("golang")
+	c.Subscribe("helloworld")
 	defer func() {
-		_ = k.Terminate()
+		_ = c.Terminate()
 	}()
 
 	sigchan := make(chan os.Signal, 1)
 	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
-	fmt.Println("here")
+
 	run := true
 	for run {
 		select {
@@ -26,7 +33,7 @@ func main() {
 			fmt.Println("exit program:", sig)
 			run = false
 		default:
-			message, err := k.ReadMessage(time.Second)
+			message, err := c.ReadMessage(time.Second)
 			if err != nil {
 				continue
 			}

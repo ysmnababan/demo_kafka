@@ -7,11 +7,11 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
-type messageBroker struct {
+type kafkaConsumer struct {
 	consumer *kafka.Consumer
 }
 
-func NewKafkaUtil(consumerGroup string) *messageBroker {
+func NewKafkaUtil(consumerGroup string) *kafkaConsumer {
 	config := &kafka.ConfigMap{
 		"bootstrap.servers": "localhost:9092",
 		"group.id":          consumerGroup,
@@ -23,21 +23,21 @@ func NewKafkaUtil(consumerGroup string) *messageBroker {
 		panic(err)
 	}
 	fmt.Println("create new kafka")
-	return &messageBroker{consumer: consumer}
+	return &kafkaConsumer{consumer: consumer}
 }
 
-func (m *messageBroker) Subscribe(topic string) {
+func (m *kafkaConsumer) Subscribe(topic string) {
 	err := m.consumer.SubscribeTopics([]string{topic}, nil)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (m *messageBroker) ReadMessage(timeout time.Duration) (message *kafka.Message, err error) {
+func (m *kafkaConsumer) ReadMessage(timeout time.Duration) (message *kafka.Message, err error) {
 	message, err = m.consumer.ReadMessage(timeout)
 	return
 }
 
-func (m *messageBroker) Terminate() error {
+func (m *kafkaConsumer) Terminate() error {
 	return m.consumer.Close()
 }
