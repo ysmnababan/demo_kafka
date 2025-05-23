@@ -37,7 +37,7 @@ func main() {
 			if err != nil {
 				continue
 			}
-			fmt.Printf("Consume event from topic: %s: partition: %v key = %s value = %s",
+			fmt.Printf("Consume event from topic: %s: partition: %v key = %s value = %s\n",
 				*message.TopicPartition.Topic,
 				message.TopicPartition.Partition,
 				message.Key,
